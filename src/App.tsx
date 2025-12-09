@@ -1,87 +1,80 @@
 import { useState } from "react";
+import { Heart, Eye } from "lucide-react";
 
 export default function App() {
   const [code, setCode] = useState("");
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6">
-      {/* Logo animado: corazón + onda ECG + S */}
-      <div className="relative mb-10 w-48 h-48">
-        {/* Corazón rojo con borde azul */}
-        <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-lg">
+      {/* Logo animado perfecto */}
+      <div className="relative w-64 h-64 mb-10">
+        <svg viewBox="0 0 256 256" className="w-full h-full">
+          {/* Corazón rojo con borde azul */}
           <path
-            d="M100 180 C60 140, 20 100, 20 60 C20 20, 60 0, 100 40 C140 0, 180 20, 180 60 C180 100, 140 140, 100 180 Z"
+            d="M128 228 C70 180, 20 130, 20 80 C20 30, 60 0, 128 60 C196 0, 236 30, 236 80 C236 130, 186 180, 128 228 Z"
             fill="#DC2626"
             stroke="#2563EB"
-            strokeWidth="8"
+            strokeWidth="12"
           />
-          {/* Letra S blanca centrada */}
+          {/* S blanca centrada */}
           <text
-            x="100"
-            y="125"
-            fontSize="110"
-            fontWeight="bold"
+            x="128"
+            y="155"
+            fontSize="140"
+            fontWeight="900"
             fill="white"
             textAnchor="middle"
-            dominantBaseline="middle"
             className="font-sans"
           >
             S
           </text>
           {/* Onda ECG verde animada */}
           <path
-            d="M10 100 L30 100 L40 80 L50 140 L60 60 L70 120 L80 100 L190 100"
+            d="M20 128 L50 128 L65 100 L80 160 L95 80 L110 140 L125 128 L236 128"
             fill="none"
             stroke="#10B981"
-            strokeWidth="6"
+            strokeWidth="10"
             strokeLinecap="round"
             className="animate-pulse"
           >
             <animate
-              attributeName="stroke-dashoffset"
-              values="0;200"
-              dur="3s"
-              repeatCount="indefinite"
-            />
-            <animate
               attributeName="stroke-dasharray"
-              values="0,200;200,0"
-              dur="3s"
+              values="0,300;300,0"
+              dur="4s"
               repeatCount="indefinite"
             />
           </path>
         </svg>
       </div>
 
-      {/* Título */}
-      <h1 className="text-6xl font-black tracking-tighter mb-2 text-gray-900">
+      <h1 className="text-7xl font-black tracking-tighter text-gray-900 mb-3">
         S U M A
       </h1>
-      <p className="text-gray-600 text-center mb-12 max-w-md text-lg">
-        Tu Asistente Médico Personal,<br />Cuando Más Lo Necesitas
+      <p className="text-gray-600 text-center text-lg mb-12 max-w-md">
+        Tu Asistente Médico Personal,<br />
+        Cuando Más Lo Necesitas
       </p>
 
-      {/* Input código */}
-      <div className="w-full max-w-xs mb-8 relative">
+      {/* Input con iconos */}
+      <div className="relative w-full max-w-xs mb-10">
         <input
           type="text"
+          maxLength={6}
           value={code}
-          onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-          placeholder="000000"
-          className="w-full text-center text-4xl font-mono tracking-widest border-2 border-gray-300 rounded-2xl py-5 pl-12 pr-12 focus:border-red-600 outline-none bg-gray-50"
+          onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+          placeholder="0 0 0 0 0 0"
+          className="w-full text-center text-5xl font-mono tracking-widest bg-gray-50 border-2 border-gray-300 rounded-3xl py-6 pl-14 pr-14 focus:border-red-600 outline-none"
         />
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">♥</span>
-        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">👁</span>
+        <Heart className="absolute left-5 top-1/2 -translate-y-1/2 w-8 h-8 text-gray-400" />
+        <Eye className="absolute right-5 top-1/2 -translate-y-1/2 w-8 h-8 text-gray-400" />
       </div>
 
-      {/* Botón ACTIVAR */}
-      <button className="w-full max-w-xs bg-red-600 hover:bg-red-700 text-white font-bold text-2xl py-6 rounded-2xl transition shadow-lg">
+      {/* Botón rojo gigante */}
+      <button className="w-full max-w-xs bg-red-600 hover:bg-red-700 text-white font-bold text-3xl py-7 rounded-3xl shadow-2xl transition">
         ACTIVAR
       </button>
 
-      <p className="text-xs text-gray-400 mt-10">
-        v1.5
-      </p>
+      <p className="text-xs text-gray-400 mt-12">v63.0 (Layout Locked)</p>
     </div>
   );
 }
