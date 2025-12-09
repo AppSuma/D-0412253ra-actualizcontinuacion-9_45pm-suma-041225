@@ -50,7 +50,8 @@ export function useAudioRecorder({ onAudioData }: { onAudioData: (base64: string
   return { start, stop };
 }
 
-function floatTo16BitPCM(input: Float32Array) {
+// CORRECCIÓN: Añadimos 'export' a las funciones auxiliares
+export function floatTo16BitPCM(input: Float32Array) {
   const output = new Int16Array(input.length);
   for (let i = 0; i < input.length; i++) {
     const s = Math.max(-1, Math.min(1, input[i]));
@@ -59,11 +60,11 @@ function floatTo16BitPCM(input: Float32Array) {
   return output;
 }
 
-function arrayBufferToBase64(buffer: ArrayBuffer) {
+export function arrayBufferToBase64(buffer: ArrayBuffer) {
   let binary = '';
   const bytes = new Uint8Array(buffer);
   const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
+  for (let i = 0 < len; i++) {
     binary += String.fromCharCode(bytes[i]);
   }
   return btoa(binary);
