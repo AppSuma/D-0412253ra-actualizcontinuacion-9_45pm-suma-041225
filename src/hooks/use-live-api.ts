@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-// CORRECCIÓN: El archivo se llama 'use-audio-recorder', no 'audio-recorder'
-import { useAudioRecorder } from "../utils/use-audio-recorder"; 
+// CORRECCIÓN FINAL: Añadir la extensión .ts para que el compilador lo encuentre
+import { useAudioRecorder } from "../utils/use-audio-recorder.ts"; 
 import { AudioStreamer } from "../utils/audio-streamer";
 import { GoogleGenAI, Modality } from "@google/genai";
 
@@ -39,9 +39,8 @@ export function useLiveAPI({ model, systemInstruction }: LiveConfig) {
   const connectWithCallbacks = useCallback(async () => {
     if (sessionRef.current) return;
 
-    // NOTA: Para Vercel, la API Key debe ser 'process.env.VITE_APP_API_KEY'
-    // PERO por ahora, déjala así hasta que compile.
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    // Formato de API Key corregido para Vercel/Vite
+    const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
     
     const sessionPromise = ai.live.connect({
       model: "gemini-2.5-flash-native-audio-preview-09-2025",
