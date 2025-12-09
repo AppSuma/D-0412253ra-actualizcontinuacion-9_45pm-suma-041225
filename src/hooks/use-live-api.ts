@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useAudioRecorder } from "../utils/audio-recorder";
+// CORRECCIÓN: El archivo se llama 'use-audio-recorder', no 'audio-recorder'
+import { useAudioRecorder } from "../utils/use-audio-recorder"; 
 import { AudioStreamer } from "../utils/audio-streamer";
 import { GoogleGenAI, Modality } from "@google/genai";
 
@@ -38,6 +39,8 @@ export function useLiveAPI({ model, systemInstruction }: LiveConfig) {
   const connectWithCallbacks = useCallback(async () => {
     if (sessionRef.current) return;
 
+    // NOTA: Para Vercel, la API Key debe ser 'process.env.VITE_APP_API_KEY'
+    // PERO por ahora, déjala así hasta que compile.
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const sessionPromise = ai.live.connect({
