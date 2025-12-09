@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useAudioRecorder } from "../utils/use-audio-recorder"; 
+// Corrección: Ruta final con extensión .ts
+import { useAudioRecorder } from "../utils/use-audio-recorder.ts"; 
 import { AudioStreamer } from "../utils/audio-streamer";
 import { GoogleGenAI, Modality } from "@google/genai";
 
@@ -38,7 +39,7 @@ export function useLiveAPI({ model, systemInstruction }: LiveConfig) {
   const connectWithCallbacks = useCallback(async () => {
     if (sessionRef.current) return;
 
-    // CORRECCIÓN VITE/VERCEL: Usar import.meta.env y prefijo VITE_
+    // Corrección: Formato de API Key para Vercel/Vite
     const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
     
     const sessionPromise = ai.live.connect({
