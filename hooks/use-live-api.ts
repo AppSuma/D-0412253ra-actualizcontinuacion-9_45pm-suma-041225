@@ -1,6 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-// Corrección: Ruta final con extensión .ts
-import { useAudioRecorder } from "../utils/use-audio-recorder.ts"; 
+import { useState, useCallback, useRef } from "react";
 import { AudioStreamer } from "../utils/audio-streamer";
 import { GoogleGenAI, Modality } from "@google/genai";
 
@@ -15,40 +13,25 @@ export function useLiveAPI({ model, systemInstruction }: LiveConfig) {
   const audioStreamerRef = useRef<AudioStreamer | null>(null);
   const sessionRef = useRef<any>(null);
 
-  useEffect(() => {
-    audioStreamerRef.current = new AudioStreamer({
-      sampleRate: 24000,
-      onComplete: () => setIsVolume(false)
-    });
-    return () => { audioStreamerRef.current?.stop(); };
-  }, []);
-
-  const { start: startRecording, stop: stopRecording } = useAudioRecorder({
-    onAudioData: (base64) => {
-      if(sessionRef.current){
-        sessionRef.current.sendRealtimeInput({
-          media: {
-            mimeType: "audio/pcm",
-            data: base64
-          }
-        });
-      }
-    }
-  });
-
   const connectWithCallbacks = useCallback(async () => {
     if (sessionRef.current) return;
 
-    // Corrección: Formato de API Key para Vercel/Vite
     const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
-    
-    const sessionPromise = ai.live.connect({
-      model: "gemini-2.5-flash-native-audio-preview-09-2025",
+
+    audioStreamerRef.current = new AudioStreamer({
+      sampleRate: 24000,
+      onComplete: () => setIsVolume(false),
+    });
+
+    const session = await ai.live.connect({
+      model: model || "gemini-1.5-flash",
+      config: {
+        responseModalities: [Modality.AUDIO],
+        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Aoede" } } },
+        systemInstruction,
+      },
       callbacks: {
-        onopen: () => {
-          setConnected(true);
-          startRecording();
-        },
+        onopen: () => setConnected(true),
         onmessage: (message) => {
           const audioBase64 = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
           if (audioBase64) {
@@ -58,38 +41,28 @@ export function useLiveAPI({ model, systemInstruction }: LiveConfig) {
         },
         onclose: () => {
           setConnected(false);
-          stopRecording();
           sessionRef.current = null;
         },
-        onerror: (e) => {
-          console.error("Live API Error:", e);
-        }
+        onerror: (e) => console.error("Live API Error:", e),
       },
-      config: {
-        responseModalities: [Modality.AUDIO],
-        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Aoede' } } },
-        systemInstruction: systemInstruction,
-      }
     });
 
-    sessionPromise.then(session => {
-        sessionRef.current = session;
-    });
-
-  }, [systemInstruction, startRecording, stopRecording]);
-
+    sessionRef.current = session;
+  }, [model, systemInstruction]);
 
   const disconnect = useCallback(() => {
-    if (sessionRef.current) {
-      try {
-          sessionRef.current.close();
-      } catch(e) {}
-      sessionRef.current = null;
-    }
-    stopRecording();
-    setConnected(false);
+    sessionRef.current?.close();
+    sessionRef.current = null;
     audioStreamerRef.current?.stop();
-  }, [stopRecording]);
+    setConnected(false);
+  }, []);
 
-  return { connect: connectWithCallbacks, disconnect, connected, isVolume };
+  // Envío manual de texto (para pruebas mientras no hay micrófono)
+  const sendText = useCallback((text: string) => {
+    if (sessionRef.current) {
+      sessionRef.current.sendRealtimeInput({ text });
+    }
+  }, []);
+
+  return { connect: connectWithCallbacks, disconnect, connected, isVolume, sendText };
 }
